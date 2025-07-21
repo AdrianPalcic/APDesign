@@ -1,5 +1,5 @@
 "use client"
-
+  import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,6 +9,35 @@ import Link from "next/link"
 import Image from "next/image"
 
 export default function LandingPage() {
+
+
+
+const [email, setEmail] = useState("");
+const [status, setStatus] = useState(""); 
+
+const handleSubmit = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("_subject", "Novi lead s web stranice!");
+    formData.append("_captcha", "false");
+
+    const response = await fetch("https://formsubmit.co/appropriatepage.design@gmail.com", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      setStatus("success");
+      setEmail("");
+    } else {
+      setStatus("error");
+    }
+  } catch (error) {
+    console.error(error);
+    setStatus("error");
+  }
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
@@ -230,12 +259,24 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center align-center max-w-md mx-auto">
                 <Input
                   placeholder="Unesite vaš email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="bg-gray-900 border-gray-700 text-white placeholder-gray-400 py-5"
                 />
-                <Button size="default" className="bg-white text-black hover:bg-gray-100 whitespace-nowrap">
+                <Button
+                  onClick={handleSubmit}
+                  size="default"
+                  className="bg-white text-black hover:bg-gray-100 whitespace-nowrap"
+                >
                   Započnite
                 </Button>
               </div>
+              {status === "success" && (
+                <p className="text-green-400">Hvala! Vaša poruka je poslana.</p>
+              )}
+              {status === "error" && (
+                <p className="text-red-400">Došlo je do greške. Pokušajte ponovno.</p>
+              )}
               <p className="text-sm text-gray-500">• Besplatne konzultacije • Bez obveze • Odgovor unutar 24 sata</p>
             </div>
           </div>
